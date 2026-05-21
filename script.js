@@ -1,24 +1,44 @@
-const speed = document.querySelector('.speed');
-const speedBar = document.querySelector('.speed-bar');
-const video = document.querySelector('.flex');
+const video = document.querySelector('.player__video');
+const toggle = document.querySelector('.toggle');
+const rewind = document.querySelector('.rewind');
+const skip = document.querySelector('.skip');
+const volume = document.querySelector('.volume');
+const playbackSpeed = document.querySelector('.playbackSpeed');
+const progress = document.querySelector('.progress__filled');
 
-function handleMove(e) {
-    const y = e.pageY - speed.offsetTop;
-    const percent = y / speed.offsetHeight;
+// PLAY / PAUSE
+toggle.addEventListener('click', () => {
+    if (video.paused) {
+        video.play();
+        toggle.textContent = '❚ ❚';
+    } else {
+        video.pause();
+        toggle.textContent = '►';
+    }
+});
 
-    // Limit between 0 and 1
-    const boundedPercent = Math.min(Math.max(percent, 0), 1);
+// REWIND 10s
+rewind.addEventListener('click', () => {
+    video.currentTime = Math.max(0, video.currentTime - 10);
+});
 
-    // Playback speed range: 0.4x to 4x
-    const min = 0.4;
-    const max = 4;
-    const height = `${boundedPercent * 100}%`;
-    const playbackRate = boundedPercent * (max - min) + min;
+// SKIP 25s
+skip.addEventListener('click', () => {
+    video.currentTime = Math.min(video.duration, video.currentTime + 25);
+});
 
-    speedBar.style.height = height;
-    speedBar.textContent = `${playbackRate.toFixed(2)}×`;
+// VOLUME CONTROL
+volume.addEventListener('input', () => {
+    video.volume = volume.value;
+});
 
-    video.playbackRate = playbackRate;
-}
+// SPEED CONTROL
+playbackSpeed.addEventListener('input', () => {
+    video.playbackRate = playbackSpeed.value;
+});
 
-speed.addEventListener('mousemove', handleMove);
+// PROGRESS BAR
+video.addEventListener('timeupdate', () => {
+    const percent = (video.currentTime / video.duration) * 100;
+    progress.style.width = percent + '%';
+});
